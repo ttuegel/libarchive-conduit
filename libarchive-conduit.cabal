@@ -1,7 +1,7 @@
 name:                libarchive-conduit
 version:             0.1.0.0
 synopsis:            Stream archives with conduit and libarchive
-license:             BSD2
+license:             BSD3
 license-file:        LICENSE
 author:              Thomas Tuegel
 maintainer:          ttuegel@gmail.com

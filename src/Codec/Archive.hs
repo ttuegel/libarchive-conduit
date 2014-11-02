@@ -1,4 +1,7 @@
-module Codec.Archive where
+module Codec.Archive
+       ( sourceArchive
+       , ArchiveException(..)
+       ) where
 
 import Control.Monad (void)
 import Control.Monad.IO.Class
@@ -8,12 +11,21 @@ import Data.Conduit
 
 import Codec.Archive.Internal
 
-sourceArchive :: MonadResource m => FilePath -> Source m (FilePath, ByteString)
+-- | Stream an archive from disk as a 'Source' of paths in the archive and their
+-- contents. The archive may be in any format supported by libarchive. The
+-- contents of each file is presented as a strict 'ByteString' because
+-- libarchive only supports streaming archives in order; if lazy 'ByteString's
+-- were used, the evaluation order could become inconsistent. Throws an
+-- 'ArchiveException' if an error occurs.
+sourceArchive :: MonadResource m
+              => FilePath  -- ^ path to archive
+              -> Source m (FilePath, ByteString)
+              -- ^ stream of paths in archive and their contents
 sourceArchive path = bracketP (readArchive path) free go
   where
     free = void . archiveReadFree
     go p = do
-        entry <- liftIO $ getNextEntry p
-        case entry of
+        mentry <- liftIO $ getNextEntry p
+        case mentry of
             Nothing -> return ()
-            Just (path, dat) -> yield (path, dat) >> go p
+            Just entry -> yield entry >> go p

@@ -1,6 +1,6 @@
 name:                libarchive-conduit
 version:             0.1.0.0
-synopsis:            Stream archives with conduit and libarchive
+synopsis:            Read many archive formats with libarchive and conduit
 license:             BSD3
 license-file:        LICENSE
 author:              Thomas Tuegel
@@ -9,6 +9,13 @@ copyright:           2014 Thomas Tuegel
 category:            Codec
 build-type:          Simple
 cabal-version:       >=1.10
+description:
+  @libarchive-conduit@ reads archives with @libarchive@. All of the many
+  formats understood by @libarchive@ are supported. Resource use is
+  managed in Haskell with the @conduit@ library. The interface is very
+  simple; archives are read from disk and their contents are presende as
+  a stream of pairs @(FilePath, ByteString)@ of the path to each file
+  and its contents, respectively.
 
 library
   exposed-modules:

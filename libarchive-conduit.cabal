@@ -13,8 +13,8 @@ cabal-version:       >=1.10
 library
   exposed-modules:
     Codec.Archive
-  other-modules:
-    Codec.Archive.Internal
+    Codec.Archive.Read
+    Codec.Archive.Util
   other-extensions:
     ForeignFunctionInterface
   build-depends:

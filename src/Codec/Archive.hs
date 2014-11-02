@@ -9,7 +9,8 @@ import Control.Monad.Trans.Resource
 import Data.ByteString (ByteString)
 import Data.Conduit
 
-import Codec.Archive.Internal
+import Codec.Archive.Read
+import Codec.Archive.Util (ArchiveException(..))
 
 -- | Stream an archive from disk as a 'Source' of paths in the archive and their
 -- contents. The archive may be in any format supported by libarchive. The

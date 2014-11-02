@@ -1,25 +1,15 @@
-{-# LANGUAGE DeriveDataTypeable #-}
 {-# LANGUAGE ForeignFunctionInterface #-}
 
-module Codec.Archive.Internal where
+module Codec.Archive.Read where
 
 import Control.Monad (when)
-import Control.Exception
 import Data.ByteString (ByteString)
 import qualified Data.ByteString as B
-import Data.Typeable
 import Foreign
 import Foreign.C.String
 import Foreign.C.Types
 
-data Archive
-
-data Entry
-
-data ArchiveException = ArchiveException String
-  deriving (Show, Typeable)
-
-instance Exception ArchiveException
+import Codec.Archive.Util
 
 foreign import ccall "archive.h archive_read_new"
     archiveReadNew :: IO (Ptr Archive)
@@ -47,20 +37,6 @@ foreign import ccall "archive.h archive_entry_pathname"
 
 foreign import ccall "archive.h archive_entry_size"
     archiveEntrySize :: Ptr Entry -> IO CSize
-
-foreign import ccall "archive.h archive_error_string"
-    archiveErrorString :: Ptr Archive -> IO CString
-
-checkArchiveError :: Ptr Archive -> CInt -> IO Bool
-checkArchiveError archive code
-    | code >= 0 = return $ code == 1
-    | otherwise = throwArchiveException archive
-
-throwArchiveException :: Ptr Archive -> IO a
-throwArchiveException archive = do
-    pstr <- archiveErrorString archive
-    str <- peekCString pstr
-    throw $ ArchiveException str
 
 readArchive :: FilePath -> IO (Ptr Archive)
 readArchive path = do

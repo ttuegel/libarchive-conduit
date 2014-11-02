@@ -8,8 +8,8 @@ import Data.Conduit
 
 import Codec.Archive.Internal
 
-archiveSource :: MonadResource m => FilePath -> Source m (FilePath, ByteString)
-archiveSource path = bracketP newArchive free go
+sourceArchive :: MonadResource m => FilePath -> Source m (FilePath, ByteString)
+sourceArchive path = bracketP (readArchive path) free go
   where
     free = void . archiveReadFree
     go p = do

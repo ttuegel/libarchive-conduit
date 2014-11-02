@@ -39,16 +39,26 @@ foreign import ccall "archive.h archive_entry_pathname"
 foreign import ccall "archive.h archive_entry_size"
     archiveEntrySize :: Ptr Entry -> IO CSize
 
-newArchive :: IO (Ptr Archive)
-newArchive = do
+foreign import ccall "archive.h archive_error_string"
+    archiveErrorString :: Ptr Archive -> IO CString
+
+checkArchiveError :: Ptr Archive -> CInt -> IO CInt
+checkArchiveError archive code
+    | code >= 0 = return code
+    | otherwise = archiveErrorString archive >>= peekCString >>= error
+
+readArchive :: FilePath -> IO (Ptr Archive)
+readArchive path = do
     p <- archiveReadNew
     archiveReadSupportFilterAll p
     archiveReadSupportFormatAll p
+    _ <- withCString path $ \cpath ->
+        archiveReadOpenFilename p cpath (64 * 1024) >>= checkArchiveError p
     return p
 
 getNextEntry :: Ptr Archive -> IO (Maybe (FilePath, ByteString))
 getNextEntry archive = alloca $ \pentry -> do
-    status <- archiveReadNextHeader archive pentry
+    status <- archiveReadNextHeader archive pentry >>= checkArchiveError archive
     case status of
         0 -> do
             entry <- peek pentry

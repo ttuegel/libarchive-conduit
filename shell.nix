@@ -1,5 +1,5 @@
-{ nixpkgs ? import <nixpkgs> {}
-, haskellPackages ? nixpkgs.haskellPackages
-}:
-
-haskellPackages.callPackage ./. {}
+with (import <nixpkgs> {});
+with pkgs;
+(haskellngPackages.callPackage ./. {
+  archive = pkgs.libarchive;
+}).env
